@@ -1,0 +1,20 @@
+{
+    'name': 'AI Blog Agent',
+    'version': '19.0.1.0.0',
+    'category': 'Website/Blog',
+    'summary': 'AI-powered content discovery and SEO blog writing',
+    'author': 'Bliss ERP Solution',
+    'depends': ['website_blog', 'mail'],
+    'data': [
+        'security/groups.xml',
+        'data/cron_data.xml',
+        'security/ir.model.access.csv',
+        'views/ai_blog_domain_views.xml',
+        'views/ai_blog_keyword_views.xml',
+        'views/ai_blog_proposal_views.xml',
+        'views/menu_views.xml',
+    ],
+    'installable': True,
+    'application': True,
+    'license': 'LGPL-3',
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ai_blog_root"
+              name="AI Blog Agent"
+              sequence="105"
+              groups="ai_blog_agent.group_ai_blog_user"/>
+
+    <menuitem id="menu_ai_blog_proposals"
+              name="Proposals"
+              parent="menu_ai_blog_root"
+              action="action_ai_blog_proposal_list"
+              sequence="10"/>
+
+    <menuitem id="menu_ai_blog_domains"
+              name="Domains"
+              parent="menu_ai_blog_root"
+              action="action_ai_blog_domain_list"
+              sequence="20"/>
+</odoo>

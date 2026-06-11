@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ai_blog_proposal_list" model="ir.ui.view">
+        <field name="name">ai.blog.proposal.list</field>
+        <field name="model">ai.blog.proposal</field>
+        <field name="arch" type="xml">
+            <list string="Proposals"
+                  decoration-success="state == 'done'"
+                  decoration-muted="state == 'rejected'"
+                  decoration-info="state == 'pending'">
+                <field name="title"/>
+                <field name="domain_id"/>
+                <field name="relevance_score"/>
+                <field name="blog_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-primary="state == 'validated'"
+                       decoration-danger="state == 'rejected'"
+                       decoration-info="state == 'pending'"/>
+                <field name="create_date" string="Detected On"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ai_blog_proposal_kanban" model="ir.ui.view">
+        <field name="name">ai.blog.proposal.kanban</field>
+        <field name="model">ai.blog.proposal</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="title"/>
+                <field name="summary"/>
+                <field name="relevance_score"/>
+                <field name="state"/>
+                <field name="domain_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <strong><field name="title"/></strong>
+                            <p class="text-muted small mt-1"><field name="summary"/></p>
+                            <div class="d-flex justify-content-between mt-2">
+                                <span class="badge bg-info">Score: <field name="relevance_score"/></span>
+                                <span class="text-muted small"><field name="domain_id"/></span>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_ai_blog_proposal_form" model="ir.ui.view">
+        <field name="name">ai.blog.proposal.form</field>
+        <field name="model">ai.blog.proposal</field>
+        <field name="arch" type="xml">
+            <form string="Article Proposal">
+                <header>
+                    <button name="action_validate" string="Validate" type="object"
+                            class="btn-primary" invisible="state != 'pending'"/>
+                    <button name="action_reject" string="Reject" type="object"
+                            invisible="state != 'pending'"/>
+                    <button name="action_view_blog_post" string="View Blog Post" type="object"
+                            invisible="not blog_post_id"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,validated,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="title" placeholder="Suggested title…"/></h1>
+                    </div>
+                    <group>
+                        <group string="Metadata">
+                            <field name="domain_id"/>
+                            <field name="relevance_score"/>
+                            <field name="blog_id"/>
+                            <field name="create_date" string="Detected On" readonly="1"/>
+                        </group>
+                        <group string="Relevance">
+                            <field name="relevance_justification"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Summary">
+                            <field name="summary" placeholder="Subject summary…"/>
+                        </page>
+                        <page string="Context &amp; Angle">
+                            <group>
+                                <field name="context_identified" placeholder="Identified context…"/>
+                                <field name="editorial_angle" placeholder="Recommended editorial angle…"/>
+                            </group>
+                        </page>
+                        <page string="Sources">
+                            <field name="sources" placeholder="Potential sources…"/>
+                        </page>
+                        <page string="Writer Instructions">
+                            <field name="extra_instructions"
+                                   placeholder="Optional extra instructions for the Writer…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ai_blog_proposal_list" model="ir.actions.act_window">
+        <field name="name">Proposals</field>
+        <field name="res_model">ai.blog.proposal</field>
+        <field name="view_mode">list,kanban,form</field>
+    </record>
+</odoo>

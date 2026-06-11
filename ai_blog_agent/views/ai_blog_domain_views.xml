@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ai_blog_domain_list" model="ir.ui.view">
+        <field name="name">ai.blog.domain.list</field>
+        <field name="model">ai.blog.domain</field>
+        <field name="arch" type="xml">
+            <list string="Domains">
+                <field name="name"/>
+                <field name="language_id"/>
+                <field name="frequency" string="Frequency (days)"/>
+                <field name="max_proposals"/>
+                <field name="last_run"/>
+                <field name="proposal_count" string="Proposals"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ai_blog_domain_form" model="ir.ui.view">
+        <field name="name">ai.blog.domain.form</field>
+        <field name="model">ai.blog.domain</field>
+        <field name="arch" type="xml">
+            <form string="Domain">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_proposals" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="proposal_count" widget="statinfo" string="Proposals"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Domain name…"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="language_id"/>
+                            <label for="frequency"/>
+                            <div>
+                                <field name="frequency" class="oe_inline"/>
+                                <span> days</span>
+                            </div>
+                            <field name="max_proposals"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="last_run"/>
+                        </group>
+                    </group>
+                    <separator string="Keywords"/>
+                    <field name="keyword_ids" nolabel="1">
+                        <list editable="bottom">
+                            <field name="name"/>
+                            <field name="active"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ai_blog_domain_list" model="ir.actions.act_window">
+        <field name="name">Domains</field>
+        <field name="res_model">ai.blog.domain</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_ai_blog_domain_user,ai.blog.domain user,model_ai_blog_domain,ai_blog_agent.group_ai_blog_user,1,1,1,0
+access_ai_blog_domain_manager,ai.blog.domain manager,model_ai_blog_domain,ai_blog_agent.group_ai_blog_manager,1,1,1,1
+access_ai_blog_keyword_user,ai.blog.keyword user,model_ai_blog_keyword,ai_blog_agent.group_ai_blog_user,1,1,1,0
+access_ai_blog_keyword_manager,ai.blog.keyword manager,model_ai_blog_keyword,ai_blog_agent.group_ai_blog_manager,1,1,1,1
+access_ai_blog_proposal_user,ai.blog.proposal user,model_ai_blog_proposal,ai_blog_agent.group_ai_blog_user,1,1,1,0
+access_ai_blog_proposal_manager,ai.blog.proposal manager,model_ai_blog_proposal,ai_blog_agent.group_ai_blog_manager,1,1,1,1

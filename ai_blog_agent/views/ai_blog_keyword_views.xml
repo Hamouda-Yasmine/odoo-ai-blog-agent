@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ai_blog_keyword_form" model="ir.ui.view">
+        <field name="name">ai.blog.keyword.form</field>
+        <field name="model">ai.blog.keyword</field>
+        <field name="arch" type="xml">
+            <form string="Keyword">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="domain_id"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
