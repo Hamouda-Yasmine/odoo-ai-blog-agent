@@ -58,6 +58,8 @@
                             class="btn-primary" invisible="state != 'pending'"/>
                     <button name="action_reject" string="Reject" type="object"
                             invisible="state != 'pending'"/>
+                    <button name="action_generate_article" string="Generate Article" type="object"
+                            class="btn-primary" invisible="state != 'validated'"/>
                     <button name="action_view_blog_post" string="View Blog Post" type="object"
                             invisible="not blog_post_id"/>
                     <field name="state" widget="statusbar"
