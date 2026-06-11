@@ -1,10 +1,9 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_ai_blog_domain_user,ai.blog.domain user,model_ai_blog_domain,ai_blog_agent.group_ai_blog_user,1,1,1,0
-access_ai_blog_domain_manager,ai.blog.domain manager,model_ai_blog_domain,ai_blog_agent.group_ai_blog_manager,1,1,1,1
-access_ai_blog_keyword_user,ai.blog.keyword user,model_ai_blog_keyword,ai_blog_agent.group_ai_blog_user,1,1,1,0
-access_ai_blog_keyword_manager,ai.blog.keyword manager,model_ai_blog_keyword,ai_blog_agent.group_ai_blog_manager,1,1,1,1
-access_ai_blog_proposal_user,ai.blog.proposal user,model_ai_blog_proposal,ai_blog_agent.group_ai_blog_user,1,1,1,0
-access_ai_blog_proposal_manager,ai.blog.proposal manager,model_ai_blog_proposal,ai_blog_agent.group_ai_blog_manager,1,1,1,1
-access_ai_blog_source_user,ai.blog.source user,model_ai_blog_source,ai_blog_agent.group_ai_blog_user,1,0,0,0
-access_ai_blog_source_manager,ai.blog.source manager,model_ai_blog_source,ai_blog_agent.group_ai_blog_manager,1,1,1,1
-access_ai_blog_provider_manager,ai.blog.provider manager,model_ai_blog_provider,ai_blog_agent.group_ai_blog_manager,1,1,1,1
+access_ai_blog_domain_user,ai.blog.domain user,model_ai_blog_domain,ai_blog_agent.group_ai_blog_user,1,0,0,0
+access_ai_blog_domain_administrator,ai.blog.domain administrator,model_ai_blog_domain,ai_blog_agent.group_ai_blog_administrator,1,1,1,1
+access_ai_blog_keyword_user,ai.blog.keyword user,model_ai_blog_keyword,ai_blog_agent.group_ai_blog_user,1,0,0,0
+access_ai_blog_keyword_administrator,ai.blog.keyword administrator,model_ai_blog_keyword,ai_blog_agent.group_ai_blog_administrator,1,1,1,1
+access_ai_blog_proposal_user,ai.blog.proposal user,model_ai_blog_proposal,ai_blog_agent.group_ai_blog_user,1,1,1,1
+access_ai_blog_proposal_administrator,ai.blog.proposal administrator,model_ai_blog_proposal,ai_blog_agent.group_ai_blog_administrator,1,1,1,1
+access_ai_blog_source_administrator,ai.blog.source administrator,model_ai_blog_source,ai_blog_agent.group_ai_blog_administrator,1,1,1,1
+access_ai_blog_provider_administrator,ai.blog.provider administrator,model_ai_blog_provider,ai_blog_agent.group_ai_blog_administrator,1,1,1,1

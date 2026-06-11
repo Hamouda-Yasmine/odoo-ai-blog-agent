@@ -22,7 +22,8 @@
             <form string="Domain">
                 <header>
                     <button name="action_run_sniffer" string="Run Sniffer"
-                            type="object" class="btn-primary"/>
+                            type="object" class="btn-primary"
+                            groups="ai_blog_agent.group_ai_blog_administrator"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

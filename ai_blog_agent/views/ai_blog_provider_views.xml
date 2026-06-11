@@ -30,7 +30,8 @@
                     <group>
                         <group>
                             <field name="api_url" placeholder="https://…"/>
-                            <field name="api_key" widget="password"/>
+                            <field name="api_key" widget="password"
+                                   groups="ai_blog_agent.group_ai_blog_administrator"/>
                             <field name="model" placeholder="e.g. gpt-4o-mini"/>
                         </group>
                         <group>
