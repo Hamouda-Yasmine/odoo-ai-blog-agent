@@ -35,6 +35,7 @@ class AiBlogProvider(models.Model):
     )
     response_path = fields.Char(
         string='Response Path',
+        required=True,
         help='Dot-notation path to extract the text from the JSON response.\n'
              'e.g.  choices.0.message.content  (OpenAI / DeepSeek)\n'
              '      content.0.text             (Claude)\n'

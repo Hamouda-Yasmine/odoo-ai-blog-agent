@@ -51,14 +51,9 @@
                         </group>
                     </group>
                     <separator string="News Sources"/>
-                    <field name="source_ids" widget="many2many_checkboxes" nolabel="1"/>
+                    <field name="source_ids" widget="many2many_tags" nolabel="1"/>
                     <separator string="Keywords"/>
-                    <field name="keyword_ids" nolabel="1">
-                        <list editable="bottom">
-                            <field name="name"/>
-                            <field name="active"/>
-                        </list>
-                    </field>
+                    <field name="keyword_ids" widget="many2many_tags" nolabel="1"/>
                 </sheet>
             </form>
         </field>

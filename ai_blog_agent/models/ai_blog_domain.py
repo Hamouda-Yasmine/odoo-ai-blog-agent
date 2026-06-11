@@ -1,7 +1,8 @@
 import json
 import logging
 import re
-from odoo import models, fields
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -33,6 +34,12 @@ class AiBlogDomain(models.Model):
     def _compute_proposal_count(self):
         for rec in self:
             rec.proposal_count = len(rec.proposal_ids)
+
+    @api.constrains('keyword_ids')
+    def _check_keywords_required(self):
+        for rec in self:
+            if not rec.keyword_ids:
+                raise ValidationError(_('Domain "%s" must have at least one keyword.') % rec.name)
 
     def action_view_proposals(self):
         self.ensure_one()
@@ -201,6 +208,8 @@ class AiBlogDomain(models.Model):
 
     def action_run_sniffer(self):
         self.ensure_one()
+        if not self.keyword_ids:
+            raise UserError(_('Please add at least one keyword to this domain before running the Sniffer.'))
         self._run_sniffer()
         self.last_run = fields.Datetime.now()
 

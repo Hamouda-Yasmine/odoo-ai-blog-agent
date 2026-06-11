@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="view_ai_blog_keyword_list" model="ir.ui.view">
+        <field name="name">ai.blog.keyword.list</field>
+        <field name="model">ai.blog.keyword</field>
+        <field name="arch" type="xml">
+            <list string="Keywords" editable="bottom">
+                <field name="name"/>
+                <field name="domain_id"/>
+                <field name="active"/>
+                <button name="unlink" string="" icon="fa-trash" type="object"
+                        confirm="Delete this keyword?"
+                        groups="ai_blog_agent.group_ai_blog_administrator"/>
+            </list>
+        </field>
+    </record>
+
     <record id="view_ai_blog_keyword_form" model="ir.ui.view">
         <field name="name">ai.blog.keyword.form</field>
         <field name="model">ai.blog.keyword</field>
@@ -14,5 +29,11 @@
                 </sheet>
             </form>
         </field>
+    </record>
+
+    <record id="action_ai_blog_keyword_list" model="ir.actions.act_window">
+        <field name="name">Keywords</field>
+        <field name="res_model">ai.blog.keyword</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

@@ -15,9 +15,20 @@
     <menuitem id="menu_ai_blog_domains"
               name="Domains"
               parent="menu_ai_blog_root"
-              action="action_ai_blog_domain_list"
               sequence="20"
               groups="ai_blog_agent.group_ai_blog_administrator"/>
+
+    <menuitem id="menu_ai_blog_domain_list"
+              name="Domains"
+              parent="menu_ai_blog_domains"
+              action="action_ai_blog_domain_list"
+              sequence="10"/>
+
+    <menuitem id="menu_ai_blog_keywords"
+              name="Keywords"
+              parent="menu_ai_blog_domains"
+              action="action_ai_blog_keyword_list"
+              sequence="20"/>
 
     <menuitem id="menu_ai_blog_articles"
               name="Articles"
