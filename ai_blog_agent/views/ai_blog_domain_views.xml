@@ -20,6 +20,10 @@
         <field name="model">ai.blog.domain</field>
         <field name="arch" type="xml">
             <form string="Domain">
+                <header>
+                    <button name="action_run_sniffer" string="Run Sniffer"
+                            type="object" class="btn-primary"/>
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_proposals" type="object"
@@ -45,6 +49,8 @@
                             <field name="last_run"/>
                         </group>
                     </group>
+                    <separator string="News Sources"/>
+                    <field name="source_ids" widget="many2many_checkboxes" nolabel="1"/>
                     <separator string="Keywords"/>
                     <field name="keyword_ids" nolabel="1">
                         <list editable="bottom">

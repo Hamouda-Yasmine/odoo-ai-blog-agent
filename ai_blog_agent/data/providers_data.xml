@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="provider_gemini" model="ai.blog.provider">
+            <field name="name">Google Gemini</field>
+            <field name="api_url">https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}</field>
+            <field name="model">gemini-2.5-flash</field>
+            <field name="request_headers">{"Content-Type": "application/json"}</field>
+            <field name="request_body_template">{"contents": [{"parts": [{"text": "{prompt}"}]}], "generationConfig": {"maxOutputTokens": {max_tokens}}}</field>
+            <field name="response_path">candidates.0.content.parts.0.text</field>
+            <field name="is_default">True</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="provider_openai" model="ai.blog.provider">
+            <field name="name">OpenAI</field>
+            <field name="api_url">https://api.openai.com/v1/chat/completions</field>
+            <field name="model">gpt-4o-mini</field>
+            <field name="request_headers">{"Authorization": "Bearer {api_key}", "Content-Type": "application/json"}</field>
+            <field name="request_body_template">{"model": "{model}", "messages": [{"role": "user", "content": "{prompt}"}], "max_tokens": {max_tokens}}</field>
+            <field name="response_path">choices.0.message.content</field>
+            <field name="sequence">2</field>
+        </record>
+
+        <record id="provider_claude" model="ai.blog.provider">
+            <field name="name">Anthropic Claude</field>
+            <field name="api_url">https://api.anthropic.com/v1/messages</field>
+            <field name="model">claude-3-5-haiku-20241022</field>
+            <field name="request_headers">{"x-api-key": "{api_key}", "anthropic-version": "2023-06-01", "Content-Type": "application/json"}</field>
+            <field name="request_body_template">{"model": "{model}", "max_tokens": {max_tokens}, "messages": [{"role": "user", "content": "{prompt}"}]}</field>
+            <field name="response_path">content.0.text</field>
+            <field name="sequence">3</field>
+        </record>
+
+        <record id="provider_deepseek" model="ai.blog.provider">
+            <field name="name">DeepSeek</field>
+            <field name="api_url">https://api.deepseek.com/v1/chat/completions</field>
+            <field name="model">deepseek-chat</field>
+            <field name="request_headers">{"Authorization": "Bearer {api_key}", "Content-Type": "application/json"}</field>
+            <field name="request_body_template">{"model": "{model}", "messages": [{"role": "user", "content": "{prompt}"}], "max_tokens": {max_tokens}}</field>
+            <field name="response_path">choices.0.message.content</field>
+            <field name="sequence">4</field>
+        </record>
+
+    </data>
+</odoo>

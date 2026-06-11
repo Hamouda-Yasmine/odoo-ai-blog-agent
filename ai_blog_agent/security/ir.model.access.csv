@@ -5,3 +5,6 @@ access_ai_blog_keyword_user,ai.blog.keyword user,model_ai_blog_keyword,ai_blog_a
 access_ai_blog_keyword_manager,ai.blog.keyword manager,model_ai_blog_keyword,ai_blog_agent.group_ai_blog_manager,1,1,1,1
 access_ai_blog_proposal_user,ai.blog.proposal user,model_ai_blog_proposal,ai_blog_agent.group_ai_blog_user,1,1,1,0
 access_ai_blog_proposal_manager,ai.blog.proposal manager,model_ai_blog_proposal,ai_blog_agent.group_ai_blog_manager,1,1,1,1
+access_ai_blog_source_user,ai.blog.source user,model_ai_blog_source,ai_blog_agent.group_ai_blog_user,1,0,0,0
+access_ai_blog_source_manager,ai.blog.source manager,model_ai_blog_source,ai_blog_agent.group_ai_blog_manager,1,1,1,1
+access_ai_blog_provider_manager,ai.blog.provider manager,model_ai_blog_provider,ai_blog_agent.group_ai_blog_manager,1,1,1,1

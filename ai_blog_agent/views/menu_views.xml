@@ -16,4 +16,22 @@
               parent="menu_ai_blog_root"
               action="action_ai_blog_domain_list"
               sequence="20"/>
+
+    <menuitem id="menu_ai_blog_configuration"
+              name="Configuration"
+              parent="menu_ai_blog_root"
+              sequence="90"
+              groups="ai_blog_agent.group_ai_blog_manager"/>
+
+    <menuitem id="menu_ai_blog_sources"
+              name="News Sources"
+              parent="menu_ai_blog_configuration"
+              action="action_ai_blog_source_list"
+              sequence="10"/>
+
+    <menuitem id="menu_ai_blog_providers"
+              name="AI Providers"
+              parent="menu_ai_blog_configuration"
+              action="action_ai_blog_provider_list"
+              sequence="20"/>
 </odoo>

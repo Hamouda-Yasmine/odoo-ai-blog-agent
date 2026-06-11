@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="source_google_news" model="ai.blog.source">
+            <field name="name">Google News RSS</field>
+            <field name="source_type">rss</field>
+            <field name="url">https://news.google.com/rss/search?q={keyword}&amp;hl={language}&amp;gl=US</field>
+            <field name="description">Free RSS feed from Google News. No API key required.</field>
+        </record>
+
+        <record id="source_bing_news" model="ai.blog.source">
+            <field name="name">Bing News RSS</field>
+            <field name="source_type">rss</field>
+            <field name="url">https://www.bing.com/news/search?q={keyword}&amp;format=RSS</field>
+            <field name="description">Free RSS feed from Bing News. No API key required.</field>
+        </record>
+
+        <record id="source_newsapi" model="ai.blog.source">
+            <field name="name">NewsAPI.org</field>
+            <field name="source_type">rest_api</field>
+            <field name="url">https://newsapi.org/v2/everything?q={keyword}&amp;apiKey={api_key}&amp;language={language}&amp;pageSize=20</field>
+            <field name="response_path">articles</field>
+            <field name="title_path">title</field>
+            <field name="source_name_path">source.name</field>
+            <field name="active">False</field>
+            <field name="description">NewsAPI.org REST API. Requires a free or paid API key from newsapi.org.</field>
+        </record>
+
+        <record id="source_gnews" model="ai.blog.source">
+            <field name="name">GNews.io</field>
+            <field name="source_type">rest_api</field>
+            <field name="url">https://gnews.io/api/v4/search?q={keyword}&amp;token={api_key}&amp;lang={language}&amp;max=10</field>
+            <field name="response_path">articles</field>
+            <field name="title_path">title</field>
+            <field name="source_name_path">source.name</field>
+            <field name="active">False</field>
+            <field name="description">GNews.io REST API. Requires an API key from gnews.io.</field>
+        </record>
+
+    </data>
+</odoo>
