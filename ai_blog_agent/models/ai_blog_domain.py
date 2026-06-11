@@ -1,8 +1,8 @@
 import json
 import logging
 import re
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import models, fields, _
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -35,13 +35,6 @@ class AiBlogDomain(models.Model):
         """Returns the number of proposals linked to this domain."""
         for rec in self:
             rec.proposal_count = len(rec.proposal_ids)
-
-    @api.constrains('keyword_ids')
-    def _check_keywords_required(self):
-        """Ensures at least one keyword is defined before saving."""
-        for rec in self:
-            if not rec.keyword_ids:
-                raise ValidationError(_('Domain "%s" must have at least one keyword.') % rec.name)
 
     def action_view_proposals(self):
         """Opens the filtered list of proposals for this domain."""
