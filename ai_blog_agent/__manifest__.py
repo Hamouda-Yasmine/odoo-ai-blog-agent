@@ -16,6 +16,7 @@
         'views/ai_blog_provider_views.xml',
         'views/ai_blog_source_views.xml',
         'views/ai_blog_proposal_views.xml',
+        'views/ai_blog_articles_views.xml',
         'views/menu_views.xml',
     ],
     'installable': True,

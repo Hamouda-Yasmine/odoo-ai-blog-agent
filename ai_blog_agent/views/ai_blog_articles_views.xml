@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ai_blog_articles_list" model="ir.ui.view">
+        <field name="name">ai.blog.articles.list</field>
+        <field name="model">blog.post</field>
+        <field name="arch" type="xml">
+            <list string="Generated Articles">
+                <field name="name" string="Title"/>
+                <field name="blog_id" string="Blog Section"/>
+                <field name="is_published" widget="badge"
+                       decoration-success="is_published == True"
+                       decoration-warning="is_published == False"
+                       string="Status"/>
+                <field name="author_id" string="Author"/>
+                <field name="ai_proposal_id" string="Proposal"/>
+                <field name="create_date" string="Generated On"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ai_blog_articles" model="ir.actions.act_window">
+        <field name="name">Generated Articles</field>
+        <field name="res_model">blog.post</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_ai_blog_articles_list"/>
+        <field name="domain">[('ai_proposal_id', '!=', False)]</field>
+        <field name="context">{'default_is_published': False}</field>
+    </record>
+</odoo>

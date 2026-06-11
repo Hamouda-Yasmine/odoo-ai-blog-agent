@@ -97,6 +97,7 @@ class AiBlogProposal(models.Model):
             'website_meta_description': (article_data.get('meta_description') or '')[:160],
             'tag_ids': [(6, 0, tag_ids)],
             'is_published': False,
+            'ai_proposal_id': self.id,
         })
 
         self.write({

@@ -17,6 +17,12 @@
               action="action_ai_blog_domain_list"
               sequence="20"/>
 
+    <menuitem id="menu_ai_blog_articles"
+              name="Articles"
+              parent="menu_ai_blog_root"
+              action="action_ai_blog_articles"
+              sequence="30"/>
+
     <menuitem id="menu_ai_blog_configuration"
               name="Configuration"
               parent="menu_ai_blog_root"

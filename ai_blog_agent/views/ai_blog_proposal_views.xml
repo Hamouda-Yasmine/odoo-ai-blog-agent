@@ -60,12 +60,20 @@
                             invisible="state != 'pending'"/>
                     <button name="action_generate_article" string="Generate Article" type="object"
                             class="btn-primary" invisible="state != 'validated'"/>
-                    <button name="action_view_blog_post" string="View Blog Post" type="object"
-                            invisible="not blog_post_id"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="pending,validated,done"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_blog_post" type="object"
+                                class="oe_stat_button" icon="fa-newspaper-o"
+                                invisible="not blog_post_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Generated</span>
+                                <span class="o_stat_text">Article</span>
+                            </div>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1><field name="title" placeholder="Suggested title…"/></h1>
                     </div>
