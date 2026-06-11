@@ -5,16 +5,16 @@
         <field name="model">ai.blog.proposal</field>
         <field name="arch" type="xml">
             <list string="Proposals"
-                  decoration-success="state == 'done'"
+                  decoration-success="state == 'validated'"
                   decoration-muted="state == 'rejected'"
                   decoration-info="state == 'pending'">
                 <field name="title"/>
                 <field name="domain_id"/>
                 <field name="relevance_score"/>
                 <field name="blog_id"/>
+                <field name="blog_post_count" string="Articles"/>
                 <field name="state" widget="badge"
-                       decoration-success="state == 'done'"
-                       decoration-primary="state == 'validated'"
+                       decoration-success="state == 'validated'"
                        decoration-danger="state == 'rejected'"
                        decoration-info="state == 'pending'"/>
                 <field name="create_date" string="Detected On"/>
@@ -61,17 +61,14 @@
                     <button name="action_generate_article" string="Generate Article" type="object"
                             class="btn-primary" invisible="state != 'validated'"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="pending,validated,done"/>
+                           statusbar_visible="pending,validated"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_blog_post" type="object"
+                        <button name="action_view_blog_posts" type="object"
                                 class="oe_stat_button" icon="fa-newspaper-o"
-                                invisible="not blog_post_id">
-                            <div class="o_stat_info">
-                                <span class="o_stat_text">Generated</span>
-                                <span class="o_stat_text">Article</span>
-                            </div>
+                                invisible="blog_post_count == 0">
+                            <field name="blog_post_count" widget="statinfo" string="Articles"/>
                         </button>
                     </div>
                     <div class="oe_title">

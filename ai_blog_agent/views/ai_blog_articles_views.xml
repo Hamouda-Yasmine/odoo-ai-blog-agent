@@ -4,15 +4,14 @@
         <field name="name">ai.blog.articles.list</field>
         <field name="model">blog.post</field>
         <field name="arch" type="xml">
-            <list string="Generated Articles">
+            <list string="Generated Articles"
+                  decoration-success="is_published"
+                  decoration-muted="not is_published">
                 <field name="name" string="Title"/>
                 <field name="blog_id" string="Blog Section"/>
-                <field name="is_published" widget="badge"
-                       decoration-success="is_published == True"
-                       decoration-warning="is_published == False"
-                       string="Status"/>
+                <field name="is_published" widget="boolean_toggle" string="Published"/>
                 <field name="author_id" string="Author"/>
-                <field name="ai_proposal_id" string="Proposal"/>
+                <field name="proposal_id" string="Proposal"/>
                 <field name="create_date" string="Generated On"/>
             </list>
         </field>
@@ -23,7 +22,7 @@
         <field name="res_model">blog.post</field>
         <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_ai_blog_articles_list"/>
-        <field name="domain">[('ai_proposal_id', '!=', False)]</field>
+        <field name="domain">[('proposal_id', '!=', False)]</field>
         <field name="context">{'default_is_published': False}</field>
     </record>
 </odoo>
