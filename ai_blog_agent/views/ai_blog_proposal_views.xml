@@ -71,6 +71,9 @@
                             <field name="blog_post_count" widget="statinfo" string="Articles"/>
                         </button>
                     </div>
+                    <field name="cover_image" widget="image"
+                           class="oe_avatar"
+                           options="{'preview_image': 'cover_image'}"/>
                     <div class="oe_title">
                         <h1><field name="title" placeholder="Suggested title…"/></h1>
                     </div>
@@ -101,6 +104,12 @@
                         <page string="Writer Instructions">
                             <field name="extra_instructions"
                                    placeholder="Optional extra instructions for the Writer…"/>
+                        </page>
+                        <page string="Cover Image">
+                            <group>
+                                <field name="cover_image_alt"
+                                       placeholder="Leave empty to auto-generate from title and keywords…"/>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
