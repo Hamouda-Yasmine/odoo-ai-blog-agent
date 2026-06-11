@@ -32,16 +32,19 @@ class AiBlogDomain(models.Model):
     proposal_count = fields.Integer(compute='_compute_proposal_count', string='Proposals')
 
     def _compute_proposal_count(self):
+        """Returns the number of proposals linked to this domain."""
         for rec in self:
             rec.proposal_count = len(rec.proposal_ids)
 
     @api.constrains('keyword_ids')
     def _check_keywords_required(self):
+        """Ensures at least one keyword is defined before saving."""
         for rec in self:
             if not rec.keyword_ids:
                 raise ValidationError(_('Domain "%s" must have at least one keyword.') % rec.name)
 
     def action_view_proposals(self):
+        """Opens the filtered list of proposals for this domain."""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
@@ -52,6 +55,7 @@ class AiBlogDomain(models.Model):
         }
 
     def _run_sniffer(self):
+        """Core Sniffer logic: fetches news via sources or provider web search, calls the AI, and persists proposals."""
         self.ensure_one()
 
         provider = self.env['ai.blog.provider'].search(
@@ -165,6 +169,7 @@ class AiBlogDomain(models.Model):
         _logger.info('AI Blog Sniffer: created %d proposals for domain "%s"', created, self.name)
 
     def _build_sniffer_prompt(self, keywords, language, articles, use_web_search):
+        """Builds the AI prompt for proposal generation, branching on web search vs. source articles."""
         keyword_str = ', '.join(keywords)
         header = (
             f'You are a content strategist for the blog domain "{self.name}".\n'
@@ -207,6 +212,7 @@ class AiBlogDomain(models.Model):
         return header + articles_section + task + format_instructions
 
     def action_run_sniffer(self):
+        """Manual button trigger: validates keywords are present, then runs the Sniffer."""
         self.ensure_one()
         if not self.keyword_ids:
             raise UserError(_('Please add at least one keyword to this domain before running the Sniffer.'))
@@ -214,6 +220,7 @@ class AiBlogDomain(models.Model):
         self.last_run = fields.Datetime.now()
 
     def _cron_run_sniffer(self):
+        """Scheduled action: processes all active domains whose refresh interval has elapsed."""
         now = fields.Datetime.now()
         domains = self.search([('active', '=', True), ('frequency', '>', 0)])
         for domain in domains:

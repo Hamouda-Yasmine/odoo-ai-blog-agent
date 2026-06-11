@@ -3,7 +3,6 @@
     'version': '19.0.1.0.0',
     'category': 'Website/Blog',
     'summary': 'AI-powered content discovery and SEO blog writing',
-    'author': 'Bliss ERP Solution',
     'depends': ['website_blog', 'mail'],
     'data': [
         'security/groups.xml',

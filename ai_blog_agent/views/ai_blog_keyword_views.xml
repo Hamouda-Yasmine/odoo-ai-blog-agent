@@ -8,7 +8,7 @@
                 <field name="name"/>
                 <field name="domain_id"/>
                 <field name="active"/>
-                <button name="unlink" string="" icon="fa-trash" type="object"
+                <button name="unlink" string="" icon="fa-trash" title="Delete" type="object"
                         confirm="Delete this keyword?"
                         groups="ai_blog_agent.group_ai_blog_administrator"/>
             </list>

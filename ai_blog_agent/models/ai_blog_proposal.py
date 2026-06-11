@@ -48,20 +48,24 @@ class AiBlogProposal(models.Model):
 
     @api.depends('blog_post_ids')
     def _compute_blog_post_count(self):
+        """Returns the number of blog posts generated from this proposal."""
         for rec in self:
             rec.blog_post_count = len(rec.blog_post_ids)
 
     def action_validate(self):
+        """Moves the proposal to 'Validated', unlocking article generation."""
         for rec in self:
             rec.state = 'validated'
             rec.message_post(body=_('Proposal validated.'))
 
     def action_reject(self):
+        """Moves the proposal to 'Rejected'."""
         for rec in self:
             rec.state = 'rejected'
             rec.message_post(body=_('Proposal rejected.'))
 
     def action_view_blog_posts(self):
+        """Opens the list of blog posts generated from this proposal."""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
@@ -72,6 +76,7 @@ class AiBlogProposal(models.Model):
         }
 
     def action_generate_article(self):
+        """Calls the AI Writer to produce a full SEO blog post and creates the blog.post record."""
         self.ensure_one()
 
         provider = self.env['ai.blog.provider'].search(
@@ -154,6 +159,7 @@ class AiBlogProposal(models.Model):
         }
 
     def _build_writer_prompt(self, keyword_str, language):
+        """Builds the structured SEO prompt sent to the AI for article generation."""
         lines = [
             'You are an expert SEO blog writer.',
             f'Write a complete, high-quality, SEO-optimized blog post in language code "{language}".\n',
@@ -204,6 +210,8 @@ class AiBlogProposal(models.Model):
         return '\n'.join(lines)
 
     def _parse_json_response(self, raw_response):
+        """Parses the AI response as JSON; falls back to extracting the content field separately
+        when unescaped HTML attributes break the outer JSON structure."""
         text = raw_response.strip()
 
         # Strip markdown fences

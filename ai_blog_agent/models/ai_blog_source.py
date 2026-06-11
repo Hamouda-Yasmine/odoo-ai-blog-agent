@@ -48,7 +48,7 @@ class AiBlogSource(models.Model):
     description = fields.Text(string='Description')
 
     def fetch_articles(self, keywords, language):
-        """Return a list of {'title': ..., 'source': ...} dicts."""
+        """Dispatches article fetching to the appropriate method based on source type."""
         self.ensure_one()
         articles = []
         if self.source_type == 'rss':
@@ -65,6 +65,7 @@ class AiBlogSource(models.Model):
         return articles
 
     def _fetch_rss(self, keyword, language):
+        """Fetches and parses an RSS feed, returning article title/source pairs."""
         url = self.url
         url = url.replace('{keyword}', urllib.parse.quote(keyword))
         url = url.replace('{language}', language or 'en')
@@ -81,6 +82,7 @@ class AiBlogSource(models.Model):
         return articles
 
     def _fetch_rest_api(self, keywords, language):
+        """Calls a REST API with all domain keywords and extracts articles via configured paths."""
         keyword_str = ' '.join(keywords)
         url = self.url
         url = url.replace('{keyword}', urllib.parse.quote(keyword_str))
@@ -112,6 +114,7 @@ class AiBlogSource(models.Model):
         return articles
 
     def _extract_by_path(self, data, path):
+        """Traverses a nested dict/list using a dot-notation path."""
         for part in path.split('.'):
             try:
                 data = data[int(part)] if isinstance(data, list) else data[part]

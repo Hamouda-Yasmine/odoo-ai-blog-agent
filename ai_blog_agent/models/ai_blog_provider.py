@@ -56,6 +56,8 @@ class AiBlogProvider(models.Model):
     sequence = fields.Integer(default=10)
 
     def call(self, prompt, max_tokens=8192, search_payload=None):
+        """Sends a prompt to the configured AI endpoint and returns the extracted text response.
+        Retries up to 3 times on 5xx errors; raises immediately on 429."""
         self.ensure_one()
 
         # Build URL — substitute {model} and {api_key}
@@ -123,6 +125,7 @@ class AiBlogProvider(models.Model):
         return self._extract_by_path(response.json(), self.response_path)
 
     def _extract_by_path(self, data, path):
+        """Traverses a nested dict/list using a dot-notation path (e.g. 'choices.0.message.content')."""
         for part in path.split('.'):
             try:
                 data = data[int(part)] if isinstance(data, list) else data[part]
@@ -131,6 +134,7 @@ class AiBlogProvider(models.Model):
         return data
 
     def action_test_connection(self):
+        """Sends a simple test prompt and displays the result as a toast notification."""
         self.ensure_one()
         try:
             result = self.call('Reply with OK')
