@@ -35,6 +35,7 @@
                         </group>
                         <group>
                             <field name="is_default"/>
+                            <field name="supports_web_search"/>
                             <field name="active"/>
                             <field name="sequence"/>
                         </group>
@@ -53,6 +54,10 @@
                                 <field name="response_path"
                                        placeholder="e.g. choices.0.message.content"/>
                             </group>
+                        </page>
+                        <page string="Web Search" invisible="not supports_web_search">
+                            <field name="search_tool_payload"
+                                   placeholder='{"tools": [{"google_search": {}}]}'/>
                         </page>
                     </notebook>
                 </sheet>

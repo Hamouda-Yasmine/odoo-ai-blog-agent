@@ -9,6 +9,8 @@
             <field name="request_headers">{"Content-Type": "application/json"}</field>
             <field name="request_body_template">{"contents": [{"parts": [{"text": "{prompt}"}]}], "generationConfig": {"maxOutputTokens": {max_tokens}}}</field>
             <field name="response_path">candidates.0.content.parts.0.text</field>
+            <field name="supports_web_search">True</field>
+            <field name="search_tool_payload">{"tools": [{"google_search": {}}]}</field>
             <field name="is_default">True</field>
             <field name="sequence">1</field>
         </record>
@@ -20,6 +22,7 @@
             <field name="request_headers">{"Authorization": "Bearer {api_key}", "Content-Type": "application/json"}</field>
             <field name="request_body_template">{"model": "{model}", "messages": [{"role": "user", "content": "{prompt}"}], "max_tokens": {max_tokens}}</field>
             <field name="response_path">choices.0.message.content</field>
+            <field name="supports_web_search">False</field>
             <field name="sequence">2</field>
         </record>
 
@@ -30,6 +33,7 @@
             <field name="request_headers">{"x-api-key": "{api_key}", "anthropic-version": "2023-06-01", "Content-Type": "application/json"}</field>
             <field name="request_body_template">{"model": "{model}", "max_tokens": {max_tokens}, "messages": [{"role": "user", "content": "{prompt}"}]}</field>
             <field name="response_path">content.0.text</field>
+            <field name="supports_web_search">False</field>
             <field name="sequence">3</field>
         </record>
 
@@ -40,6 +44,7 @@
             <field name="request_headers">{"Authorization": "Bearer {api_key}", "Content-Type": "application/json"}</field>
             <field name="request_body_template">{"model": "{model}", "messages": [{"role": "user", "content": "{prompt}"}], "max_tokens": {max_tokens}}</field>
             <field name="response_path">choices.0.message.content</field>
+            <field name="supports_web_search">False</field>
             <field name="sequence">4</field>
         </record>
 

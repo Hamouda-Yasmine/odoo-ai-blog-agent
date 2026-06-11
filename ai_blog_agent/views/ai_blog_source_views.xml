@@ -26,7 +26,8 @@
                         <group>
                             <field name="source_type"/>
                             <field name="url" placeholder="https://…{keyword}…{language}…"/>
-                            <field name="api_key" widget="password"/>
+                            <field name="api_key" widget="password"
+                                   invisible="source_type != 'rest_api'"/>
                         </group>
                         <group>
                             <field name="active"/>

@@ -37,11 +37,21 @@ class AiBlogProvider(models.Model):
              '      content.0.text             (Claude)\n'
              '      candidates.0.content.parts.0.text  (Gemini)',
     )
+    supports_web_search = fields.Boolean(
+        string='Supports Web Search',
+        help='Enable if this provider has a built-in web search tool (e.g. Gemini Google Search).',
+    )
+    search_tool_payload = fields.Text(
+        string='Search Tool Payload',
+        help='JSON merged into the request body to activate web search.\n'
+             'Gemini: {"tools": [{"google_search": {}}]}\n'
+             'OpenAI Responses: {"tools": [{"type": "web_search_preview"}]}',
+    )
     is_default = fields.Boolean(string='Default Provider')
     active = fields.Boolean(default=True)
     sequence = fields.Integer(default=10)
 
-    def call(self, prompt, max_tokens=4096):
+    def call(self, prompt, max_tokens=4096, search_payload=None):
         self.ensure_one()
 
         # Build URL — substitute {model} and {api_key}
@@ -73,6 +83,10 @@ class AiBlogProvider(models.Model):
                 body = json.loads(body_str)
             except json.JSONDecodeError as e:
                 raise UserError(_('Invalid body template JSON: %s') % str(e))
+
+        # Merge search tool payload when the provider's web search is activated
+        if search_payload and isinstance(search_payload, dict):
+            body.update(search_payload)
 
         last_error = None
         for attempt in range(3):

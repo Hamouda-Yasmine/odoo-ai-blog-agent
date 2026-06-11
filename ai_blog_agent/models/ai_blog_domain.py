@@ -47,14 +47,11 @@ class AiBlogDomain(models.Model):
     def _run_sniffer(self):
         self.ensure_one()
 
-        # Resolve active provider (default first, then any active one)
         provider = self.env['ai.blog.provider'].search(
             [('is_default', '=', True), ('active', '=', True)], limit=1
         )
         if not provider:
-            provider = self.env['ai.blog.provider'].search(
-                [('active', '=', True)], limit=1
-            )
+            provider = self.env['ai.blog.provider'].search([('active', '=', True)], limit=1)
         if not provider:
             _logger.warning('AI Blog Sniffer: no active provider for domain "%s"', self.name)
             return
@@ -64,59 +61,55 @@ class AiBlogDomain(models.Model):
             _logger.info('AI Blog Sniffer: no keywords on domain "%s", skipping', self.name)
             return
 
-        # Take first 2 chars of locale code (en_US → en, fr_FR → fr)
         language = (self.language_id.code or 'en').split('_')[0]
 
-        # Collect articles from all selected sources
-        all_articles = []
-        for source in self.source_ids:
-            try:
-                all_articles.extend(source.fetch_articles(keyword_names, language))
-            except Exception as e:
-                _logger.warning('AI Blog Sniffer: source "%s" failed: %s', source.name, e)
+        search_payload = None
+        unique_articles = []
 
-        if not all_articles:
-            _logger.info('AI Blog Sniffer: no articles found for domain "%s"', self.name)
-            return
+        if provider.supports_web_search:
+            _logger.info(
+                'AI Blog Sniffer: domain "%s" — using provider web search (%s)',
+                self.name, provider.name,
+            )
+            # Provider searches the web itself — skip source fetching entirely
+            if provider.search_tool_payload:
+                try:
+                    search_payload = json.loads(provider.search_tool_payload)
+                except json.JSONDecodeError:
+                    _logger.warning(
+                        'AI Blog Sniffer: invalid search_tool_payload JSON on provider "%s"',
+                        provider.name,
+                    )
+        else:
+            _logger.info(
+                'AI Blog Sniffer: domain "%s" — using %d configured source(s)',
+                self.name, len(self.source_ids),
+            )
+            # Fetch articles from the domain's configured sources
+            all_articles = []
+            for source in self.source_ids:
+                try:
+                    all_articles.extend(source.fetch_articles(keyword_names, language))
+                except Exception as e:
+                    _logger.warning('AI Blog Sniffer: source "%s" failed: %s', source.name, e)
 
-        # Deduplicate by normalised title
-        seen, unique_articles = set(), []
-        for article in all_articles:
-            key = article.get('title', '').lower().strip()
-            if key and key not in seen:
-                seen.add(key)
-                unique_articles.append(article)
+            if not all_articles:
+                _logger.info('AI Blog Sniffer: no articles found for domain "%s"', self.name)
+                return
 
-        # Build prompt — cap at 50 articles to stay within token limits
-        articles_text = '\n'.join(
-            f"- {a['title']} (source: {a.get('source', 'unknown')})"
-            for a in unique_articles[:50]
-        )
+            seen = set()
+            for article in all_articles:
+                key = article.get('title', '').lower().strip()
+                if key and key not in seen:
+                    seen.add(key)
+                    unique_articles.append(article)
 
-        prompt = (
-            f'You are a content strategist for the blog domain "{self.name}".\n'
-            f'Keywords: {", ".join(keyword_names)}\n'
-            f'Language: {language}\n\n'
-            f'Here are recent news articles collected from various sources:\n'
-            f'{articles_text}\n\n'
-            f'Based on these articles, generate exactly {self.max_proposals} blog post proposals '
-            f'that are relevant to the keywords and would be valuable for readers.\n\n'
-            f'IMPORTANT: Return ONLY a raw JSON array. No markdown, no code fences, no explanation.\n'
-            f'Keep ALL text fields short — maximum 30 words each.\n'
-            f'Each object must have exactly these keys:\n'
-            f'{{\n'
-            f'  "title": "Concise blog post title (max 15 words)",\n'
-            f'  "summary": "One sentence summary",\n'
-            f'  "context_identified": "Key context in max 25 words",\n'
-            f'  "editorial_angle": "Angle in max 20 words",\n'
-            f'  "sources": "2-3 source names only, comma-separated",\n'
-            f'  "relevance_score": 8.5,\n'
-            f'  "relevance_justification": "One sentence justification"\n'
-            f'}}'
+        prompt = self._build_sniffer_prompt(
+            keyword_names, language, unique_articles, provider.supports_web_search
         )
 
         try:
-            raw_response = provider.call(prompt, max_tokens=8192)
+            raw_response = provider.call(prompt, max_tokens=8192, search_payload=search_payload)
         except Exception as e:
             _logger.error('AI Blog Sniffer: provider call failed for domain "%s": %s', self.name, e)
             return
@@ -124,12 +117,10 @@ class AiBlogDomain(models.Model):
         # Extract JSON — handle markdown fences, leading text, or bare arrays
         text = raw_response.strip()
 
-        # Strategy 1: content inside ```...``` fences
         fenced = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', text)
         if fenced:
             text = fenced.group(1).strip()
 
-        # Strategy 2: find the outermost [...] if still not a clean array
         if not text.startswith('['):
             array_match = re.search(r'\[[\s\S]*\]', text)
             if array_match:
@@ -165,6 +156,48 @@ class AiBlogDomain(models.Model):
             created += 1
 
         _logger.info('AI Blog Sniffer: created %d proposals for domain "%s"', created, self.name)
+
+    def _build_sniffer_prompt(self, keywords, language, articles, use_web_search):
+        keyword_str = ', '.join(keywords)
+        header = (
+            f'You are a content strategist for the blog domain "{self.name}".\n'
+            f'Keywords: {keyword_str}\n'
+            f'Language: {language}\n\n'
+        )
+
+        if use_web_search:
+            task = (
+                f'Search the web for recent news about: {keyword_str}.\n'
+                f'Based on what you find, generate exactly {self.max_proposals} blog post proposals.\n\n'
+            )
+            articles_section = ''
+        else:
+            articles_text = '\n'.join(
+                f"- {a['title']} (source: {a.get('source', 'unknown')})"
+                for a in articles[:50]
+            )
+            articles_section = f'Here are recent news articles:\n{articles_text}\n\n'
+            task = (
+                f'Based on the provided articles, '
+                f'generate exactly {self.max_proposals} blog post proposals.\n\n'
+            )
+
+        format_instructions = (
+            'IMPORTANT: Return ONLY a raw JSON array. No markdown, no code fences, no explanation.\n'
+            'Keep ALL text fields short — maximum 30 words each.\n'
+            'Each object must have exactly these keys:\n'
+            '{\n'
+            '  "title": "Concise blog post title (max 15 words)",\n'
+            '  "summary": "One sentence summary",\n'
+            '  "context_identified": "Key context in max 25 words",\n'
+            '  "editorial_angle": "Angle in max 20 words",\n'
+            '  "sources": "2-3 source names only, comma-separated",\n'
+            '  "relevance_score": 8.5,\n'
+            '  "relevance_justification": "One sentence justification"\n'
+            '}'
+        )
+
+        return header + articles_section + task + format_instructions
 
     def action_run_sniffer(self):
         self.ensure_one()
