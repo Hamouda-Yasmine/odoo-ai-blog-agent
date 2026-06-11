@@ -38,7 +38,7 @@
                             <strong><field name="title"/></strong>
                             <p class="text-muted small mt-1"><field name="summary"/></p>
                             <div class="d-flex justify-content-between mt-2">
-                                <span class="badge bg-info">Score: <field name="relevance_score"/></span>
+                                <span class="badge bg-info">Relevance: <field name="relevance_score"/></span>
                                 <span class="text-muted small"><field name="domain_id"/></span>
                             </div>
                         </div>

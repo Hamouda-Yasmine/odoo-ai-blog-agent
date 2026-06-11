@@ -1,8 +1,11 @@
 import json
+import logging
 import time
 import requests
 from odoo import models, fields, _
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class AiBlogProvider(models.Model):
@@ -51,7 +54,7 @@ class AiBlogProvider(models.Model):
     active = fields.Boolean(default=True)
     sequence = fields.Integer(default=10)
 
-    def call(self, prompt, max_tokens=4096, search_payload=None):
+    def call(self, prompt, max_tokens=8192, search_payload=None):
         self.ensure_one()
 
         # Build URL — substitute {model} and {api_key}
@@ -92,18 +95,26 @@ class AiBlogProvider(models.Model):
         for attempt in range(3):
             try:
                 response = requests.post(url, headers=headers, json=body, timeout=60)
-                if response.status_code in (429, 500, 502, 503, 504) and attempt < 2:
-                    time.sleep(2 ** attempt)  # 1s then 2s
+                if response.status_code == 429:
+                    raise UserError(_(
+                        'API rate limit reached (429). Please wait a moment and try again.'
+                    ))
+                if response.status_code in (500, 502, 503, 504) and attempt < 2:
+                    wait = 2 ** attempt  # 1s, 2s
+                    _logger.warning('AI provider server error (%d), retrying in %ds', response.status_code, wait)
+                    time.sleep(wait)
                     last_error = response
                     continue
                 response.raise_for_status()
                 last_error = None
                 break
+            except UserError:
+                raise
             except requests.exceptions.RequestException as e:
                 raise UserError(_('API request failed: %s') % str(e))
         if last_error is not None:
             raise UserError(_(
-                'API error %s after 3 attempts. Please try again in a moment.'
+                'API server error %s after 3 attempts. Please try again in a moment.'
             ) % last_error.status_code)
 
         if not self.response_path:

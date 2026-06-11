@@ -1,7 +1,10 @@
 import json
+import logging
 import re
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class AiBlogProposal(models.Model):
@@ -73,12 +76,13 @@ class AiBlogProposal(models.Model):
 
         prompt = self._build_writer_prompt(keyword_str, language)
 
+        _logger.info('Writer agent [%s]: calling provider "%s"', self.title, provider.name)
         try:
-            raw_response = provider.call(prompt, max_tokens=16384)
+            raw_response = provider.call(prompt, max_tokens=8192)
         except Exception as e:
             raise UserError(_('AI provider call failed: %s') % str(e))
 
-        article_data = self._parse_writer_response(raw_response)
+        article_data = self._parse_json_response(raw_response)
 
         blog = self.blog_id or self.env['blog.blog'].search([], limit=1)
         if not blog:
@@ -96,9 +100,12 @@ class AiBlogProposal(models.Model):
 
         blog_post = self.env['blog.post'].create({
             'name': article_data.get('title') or self.title,
+            'subtitle': article_data.get('subtitle', ''),
             'blog_id': blog.id,
             'content': article_data.get('content', ''),
-            'website_meta_description': (article_data.get('meta_description') or '')[:160],
+            'website_meta_title': (article_data.get('meta_title') or '')[:60],
+            'website_meta_description': (article_data.get('meta_description') or '')[:155],
+            'website_meta_keywords': article_data.get('meta_keywords', ''),
             'tag_ids': [(6, 0, tag_ids)],
             'is_published': False,
             'proposal_id': self.id,
@@ -118,8 +125,9 @@ class AiBlogProposal(models.Model):
     def _build_writer_prompt(self, keyword_str, language):
         lines = [
             'You are an expert SEO blog writer.',
-            f'Write a complete, high-quality blog post in language code "{language}" for the proposal below.\n',
-            f'Proposed title: {self.title}',
+            f'Write a complete, high-quality, SEO-optimized blog post in language code "{language}".\n',
+            f'Topic: {self.title}',
+            f'Domain: {self.domain_id.name}',
             f'Keywords to include naturally: {keyword_str}',
         ]
         if self.summary:
@@ -137,38 +145,66 @@ class AiBlogProposal(models.Model):
             '\nIMPORTANT: Return ONLY a raw JSON object. No markdown, no code fences, no explanation.',
             'The JSON must have exactly these keys:',
             '{',
-            '  "title": "Final SEO-optimized blog post title",',
-            '  "meta_description": "SEO meta description, strictly 150-160 characters",',
-            '  "content": "<p>Full HTML content...</p>",',
+            '  "title": "Plain text H1 title with primary keyword — NO HTML tags",',
+            '  "subtitle": "Plain text subtitle — NO HTML tags",',
+            '  "meta_title": "Plain text SEO title, max 60 chars — NO HTML tags",',
+            '  "meta_description": "Plain text meta description, max 155 chars — NO HTML tags",',
+            '  "meta_keywords": "keyword1, keyword2, keyword3, keyword4, keyword5",',
+            '  "content": "<p>Full HTML article...</p>",',
             '  "tags": ["tag1", "tag2", "tag3"]',
             '}',
+            '\nCRITICAL JSON rules:',
+            '- title, subtitle, meta_title, meta_description, meta_keywords, tags: PLAIN TEXT ONLY — zero HTML',
+            '- content: HTML allowed, but ALWAYS use single quotes for HTML attributes (href=\'url\' not href="url")',
+            '- Never use double quotes inside any JSON string value — they break JSON parsing',
             '\nContent requirements:',
-            '- Minimum 600 words',
-            '- Well structured: introduction, H2/H3 sections, conclusion',
-            '- Use only HTML tags: p, h2, h3, ul, li, strong, em',
-            '- Keywords included naturally throughout',
-            '- 3 to 6 relevant tags',
-            '- meta_description between 150 and 160 characters exactly',
-            '- Escape all double quotes inside HTML attribute values',
+            '- Minimum 800 words',
+            '- Structure: introduction → H2 sections → H3 subsections → conclusion',
+            '- Use only HTML tags in content: p, h2, h3, ul, li, strong, em',
+            '- Primary keyword in title, first paragraph, and at least 2 headings',
+            '- meta_title: 50-60 characters for browser tab and search results',
+            '- meta_description: 150-155 characters, compelling call-to-action',
+            '- meta_keywords: 5-8 comma-separated SEO keywords',
+            '- tags: 3-6 short topic tags',
         ]
         return '\n'.join(lines)
 
-    def _parse_writer_response(self, raw_response):
+    def _parse_json_response(self, raw_response):
         text = raw_response.strip()
 
+        # Strip markdown fences
         fenced = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', text)
         if fenced:
             text = fenced.group(1).strip()
 
+        # Find outermost { ... }
         if not text.startswith('{'):
             obj_match = re.search(r'\{[\s\S]*\}', text)
             if obj_match:
                 text = obj_match.group()
 
+        # First attempt: direct parse
         try:
             return json.loads(text)
         except json.JSONDecodeError:
-            raise UserError(
-                _('Could not parse the AI response as JSON.\nRaw response (first 500 chars):\n%s')
-                % raw_response[:500]
-            )
+            pass
+
+        # Second attempt: replace unescaped double quotes inside HTML content
+        # by temporarily removing the content field and extracting it separately
+        try:
+            content_match = re.search(r'"content"\s*:\s*"([\s\S]*?)",\s*"tags"', text)
+            if content_match:
+                html_content = content_match.group(1)
+                placeholder = '__CONTENT_PLACEHOLDER__'
+                text_no_content = text.replace(content_match.group(0),
+                                               f'"content": "{placeholder}", "tags"')
+                data = json.loads(text_no_content)
+                data['content'] = html_content
+                return data
+        except Exception:
+            pass
+
+        raise UserError(
+            _('Could not parse AI response as JSON.\nFirst 500 chars:\n%s')
+            % raw_response[:500]
+        )
